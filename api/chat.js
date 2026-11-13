@@ -24,32 +24,41 @@ export default async function handler(req, res) {
   `;
 
   try {
-    const contents = [
-      { role: 'user', parts: [{ text: systemInstruction }] },
-      { role: 'model', parts: [{ text: 'أهلاً بك! أنا مومو 🐼✨ مستعد لتعليمك اللغة الصينية بكل مرح! لنبدأ!' }] },
-      ...(history || []),
-      { role: 'user', parts: [{ text: message }] }
+    // تجهيز الرسائل بالشكل المتوافق مع OpenAI / OpenRouter
+    const messages = [
+      { role: 'system', content: systemInstruction },
+      { role: 'assistant', content: 'أهلاً بك! أنا مومو 🐼✨ مستعد لتعليمك اللغة الصينية بكل مرح! لنبدأ!' },
+      ...(history || []).map(h => ({
+        role: h.role === 'model' ? 'assistant' : 'user',
+        content: h.parts[0].text
+      })),
+      { role: 'user', content: message }
     ];
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents })
-      }
-    );
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': 'https://github.com', // مطلوب من OpenRouter
+        'X-Title': 'Momo Chinese Tutor'       // اسم التطبيق اختياري
+      },
+      body: JSON.stringify({
+        // نستخدم نموذجاً ذكياً وسريعاً ومتوفراً غالباً بشكل مجاني أو رخيص على OpenRouter
+        model: 'openai/gpt-4o-mini', 
+        messages: messages
+      })
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
-      // إرجاع رسالة الخطأ التفصيلية من API لتسهيل التشخيص
       return res.status(response.status).json({ 
-        error: `خطأ من المزود (${response.status}): ${data.error?.message || JSON.stringify(data)}` 
+        error: `خطأ من OpenRouter (${response.status}): ${data.error?.message || JSON.stringify(data)}` 
       });
     }
 
-    const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const replyText = data.choices?.[0]?.message?.content;
     if (!replyText) {
       return res.status(500).json({ error: 'لم يرسل النموذج أي رد نصي.' });
     }
