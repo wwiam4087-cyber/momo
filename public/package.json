@@ -1,0 +1,9 @@
+{
+  "name": "momo-chinese-tutor",
+  "version": "1.0.0",
+  "description": "Momo - Cute AI Chinese Language Tutor",
+  "main": "api/chat.js",
+  "scripts": {
+    "start": "echo 'Ready for Vercel'"
+  }
+}
