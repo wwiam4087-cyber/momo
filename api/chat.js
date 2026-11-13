@@ -3,8 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // قراءة المفتاح من متغيرات البيئة في Vercel بالاسم المطلوب
-  const apiKey = process.env.api_key;
+  const apiKey = process.env.api_key ? process.env.api_key.trim() : null;
 
   if (!apiKey) {
     return res.status(500).json({ error: 'لم يتم العثور على المتغير api_key في إعدادات السيرفر.' });
@@ -12,7 +11,6 @@ export default async function handler(req, res) {
 
   const { message, history } = req.body;
 
-  // تعليمات الشخصية (System Prompt) لتحديد سلوك مومو
   const systemInstruction = `
     أنت "مومو" (Momo)، كائن افتراضي لطيف جداً، مرح، ومشجع، مهمتك تعليم اللغة الصينية للمتحدثين بالعربية من خلال المحادثة والتواصل اليومي.
     قواعدك في الرد:
@@ -26,7 +24,6 @@ export default async function handler(req, res) {
   `;
 
   try {
-    // تجهيز سجل المحادثة
     const contents = [
       { role: 'user', parts: [{ text: systemInstruction }] },
       { role: 'model', parts: [{ text: 'أهلاً بك! أنا مومو 🐼✨ مستعد لتعليمك اللغة الصينية بكل مرح! لنبدأ!' }] },
@@ -46,14 +43,21 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error?.message || 'خطأ في الاتصال بالذكاء الاصطناعي');
+      // إرجاع رسالة الخطأ التفصيلية من API لتسهيل التشخيص
+      return res.status(response.status).json({ 
+        error: `خطأ من المزود (${response.status}): ${data.error?.message || JSON.stringify(data)}` 
+      });
     }
 
-    const replyText = data.candidates[0].content.parts[0].text;
+    const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!replyText) {
+      return res.status(500).json({ error: 'لم يرسل النموذج أي رد نصي.' });
+    }
+
     res.status(200).json({ reply: replyText });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'حدث خطأ أثناء تفكير مومو، حاول مرة أخرى!' });
+    res.status(500).json({ error: `خطأ تقني في السيرفر: ${error.message}` });
   }
 }
