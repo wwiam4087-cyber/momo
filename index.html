@@ -7,7 +7,6 @@
     <style>
         :root {
             --primary: #FF6B6B;
-            --secondary: #4ECDC4;
             --bg: #F7F9FC;
             --card-bg: #FFFFFF;
             --text: #2D3748;
@@ -38,9 +37,6 @@
             font-size: 1.2rem;
             margin: 0;
             color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .chat-container {
@@ -55,7 +51,6 @@
             overflow: hidden;
         }
 
-        /* شخصية مومو الحية (SVG) */
         .momo-stage {
             background: linear-gradient(135deg, #FFF5F5 0%, #E6FFFA 100%);
             border-radius: 20px;
@@ -63,19 +58,13 @@
             text-align: center;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.03);
             margin-bottom: 15px;
-            position: relative;
         }
 
         .momo-svg-container {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             margin: 0 auto;
             cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .momo-svg-container:active {
-            transform: scale(0.95);
         }
 
         .momo-dialogue {
@@ -96,7 +85,6 @@
             margin-top: 2px;
         }
 
-        /* صندوق المحادثة */
         .messages-box {
             flex: 1;
             background: white;
@@ -122,14 +110,12 @@
             background: var(--primary);
             color: white;
             align-self: flex-start;
-            border-bottom-right-radius: 2px;
         }
 
         .message.momo {
             background: #EDF2F7;
             color: var(--text);
             align-self: flex-end;
-            border-bottom-left-radius: 2px;
         }
 
         .input-area {
@@ -150,10 +136,6 @@
             font-size: 0.95rem;
         }
 
-        input[type="text"]:focus {
-            border-color: var(--primary);
-        }
-
         button.send-btn {
             background: var(--primary);
             color: white;
@@ -162,96 +144,51 @@
             border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        button.send-btn:hover {
-            background: #FF5252;
-        }
-
-        .mic-btn {
-            background: #EDF2F7;
-            border: none;
-            width: 42px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .mic-btn.recording {
-            background: #FEB2B2;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-            100% { transform: scale(1); }
-        }
-
-        /* حركات التنفس والرمش لمومو */
-        @keyframes breathe {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        .momo-body {
-            animation: breathe 3s ease-in-out infinite;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🦊 مومو (Momo) - رفيقك الصيني</h1>
-        <span style="font-size: 0.85rem; color: #48BB78; font-weight: bold;">● متصل بالذكاء الاصطناعي</span>
+        <h1>🦊 مومو (Momo)</h1>
+        <span style="font-size: 0.85rem; color: #48BB78; font-weight: bold;">● متصل عبر OpenRouter</span>
     </header>
 
     <div class="chat-container">
-        <!-- مسرح مومو الحي -->
         <div class="momo-stage">
-            <div class="momo-svg-container" onclick="pokeMomo()">
-                <svg viewBox="0 0 100 100" width="100%" height="100%" class="momo-body">
-                    <!-- الرأس والأذنان -->
+            <div class="momo-svg-container">
+                <svg viewBox="0 0 100 100" width="100%" height="100%">
                     <polygon points="25,35 15,10 40,25" fill="#FF8A65" />
                     <polygon points="75,35 85,10 60,25" fill="#FF8A65" />
                     <circle cx="50" cy="55" r="30" fill="#FF7043" />
                     <circle cx="50" cy="62" r="18" fill="#FFF3E0" />
-                    <!-- العينان -->
-                    <circle id="left-eye" cx="40" cy="50" r="3.5" fill="#2D3748" />
-                    <circle id="right-eye" cx="60" cy="50" r="3.5" fill="#2D3748" />
-                    <!-- الأنف والفم -->
+                    <circle cx="40" cy="50" r="3.5" fill="#2D3748" />
+                    <circle cx="60" cy="50" r="3.5" fill="#2D3748" />
                     <polygon points="50,59 47,56 53,56" fill="#2D3748" />
-                    <path id="momo-mouth" d="M 46 64 Q 50 68 54 64" fill="none" stroke="#2D3748" stroke-width="2" stroke-linecap="round" />
+                    <path d="M 46 64 Q 50 68 54 64" fill="none" stroke="#2D3748" stroke-width="2" stroke-linecap="round" />
                 </svg>
             </div>
-            <div id="momo-bubble">
+            <div class="momo-dialogue">
                 <div id="momo-speech">Nǐ hǎo! Wǒ shì Momo. 🐾</div>
-                <div class="pinyin-sub">مرحباً! أنا مومو. (تحدث معي بالعربية أو الصينية!)</div>
+                <div class="pinyin-sub">مرحباً! أنا مومو.</div>
             </div>
         </div>
 
-        <!-- صندوق الرسائل -->
         <div class="messages-box" id="messagesBox">
             <div class="message momo">
-                你好！أهلاً بك! أنا مومو، كائنك الحي ومساعدك لتعلم اللغة الصينية. اسألني ما شئت أو تحدث معي مباشرة!
+                你好！أهلاً بك! أنا مومو، تحدث معي وسأرد عليك بالصينية والعربية عبر OpenRouter.
             </div>
         </div>
 
-        <!-- منطقة الادخال -->
         <div class="input-area">
-            <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="تحدث بصوتك">🎙️</button>
             <input type="text" id="userInput" placeholder="اكتب رسالتك هنا لمومو..." onkeypress="handleKeyPress(event)">
             <button class="send-btn" onclick="sendMessage()">إرسال</button>
         </div>
     </div>
 
-    <!-- ملف المفتاح في الخلفية -->
+    <!-- ضع مفتاح OpenRouter الخاص بك هنا في متغير api_ai -->
     <script>
-        // ضع مفتاحك هنا في المتغير البرمجي في الخلفية
-        const api_ai = "AIzaSy..." /* استبدل هذا بمفتاحك الحقيقي من Google AI Studio */;
+        const api_ai = "sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; 
     </script>
 
     <script>
@@ -259,94 +196,63 @@
         const userInput = document.getElementById('userInput');
         const momoSpeech = document.getElementById('momo-speech');
         const momoSub = document.querySelector('.pinyin-sub');
-        const momoMouth = document.getElementById('momo-mouth');
 
-        // حركة الرمش التلقائية
-        setInterval(() => {
-            const leftEye = document.getElementById('left-eye');
-            const rightEye = document.getElementById('right-eye');
-            leftEye.setAttribute('ry', '0.5');
-            rightEye.setAttribute('ry', '0.5');
-            setTimeout(() => {
-                leftEye.setAttribute('ry', '3.5');
-                rightEye.setAttribute('ry', '3.5');
-            }, 150);
-        }, 4000);
-
-        // تفاعل عند النقر على مومو
-        function pokeMomo() {
-            speakChinese("Nǐ hǎo! Wǒ ài nǐ!");
-            momoSpeech.innerText = "Nǐ hǎo! Wǒ ài nǐ!";
-            momoSub.innerText = "مرحباً! أنا أحبك!";
-            animateMouth();
-        }
-
-        function animateMouth() {
-            let toggle = false;
-            let count = 0;
-            const interval = setInterval(() => {
-                toggle = !toggle;
-                momoMouth.setAttribute('d', toggle ? "M 46 63 Q 50 71 54 63" : "M 46 65 Q 50 62 54 65");
-                count++;
-                if(count > 8) {
-                    clearInterval(interval);
-                    momoMouth.setAttribute('d', "M 46 64 Q 50 68 54 64");
-                }
-            }, 150);
-        }
-
-        // نطق الكلمات الصينية صوتياً
-        function speakChinese(text) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'zh-CN';
-                utterance.rate = 0.9;
-                window.speechSynthesis.speak(utterance);
-            }
-        }
-
-        // إرسال الرسالة للذكاء الاصطناعي في الخلفية
         async function sendMessage() {
             const text = userInput.value.trim();
             if (!text) return;
 
-            // إضافة رسالة المستخدم للواجهة
+            if (!api_ai || api_ai.includes("xxxx")) {
+                alert("الرجاء وضع مفتاح OpenRouter الحقيقي في متغير api_ai في أسفل الكود!");
+                return;
+            }
+
             appendMessage(text, 'user');
             userInput.value = '';
 
-            // رسالة انتظار من مومو
             const loadingId = appendMessage("مومو يفكر...", 'momo loading');
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${api_ai}`, {
+                // الاتصال المباشر بمنصة OpenRouter
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${api_ai}`,
+                        'HTTP-Referer': window.location.href, // اختيارية مطلوبة أحياناً في OpenRouter لتصنيف التطبيقات
+                        'X-Title': 'Momo Chinese App'
+                    },
                     body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: `أنت "مومو" (Momo)، كائن حي لطيف ومحبوب تتعلم وتعلّم اللغة الصينية. رد دائماً على المستخدم بعبارة صينية قصيرة مع Pinyin وتوضيحها بالعربية بشكل دافئ وودود. رسالة المستخدم هي: "${text}"`
-                            }]
-                        }]
+                        model: "deepseek/deepseek-chat", // يمكنك تغيير النموذج هنا حسب رغبتك (مثلاً openai/gpt-4o-mini أو anthropic/claude-3.5-sonnet)
+                        messages: [
+                            {
+                                role: "system",
+                                content: "أنت 'مومو' (Momo)، كائن حي لطيف ومحبوب تتعلم وتعلّم اللغة الصينية. رد دائماً على المستخدم بعبارة صينية قصيرة مع Pinyin وتوضيحها بالعربية بشكل دافئ وودود."
+                            },
+                            {
+                                role: "user",
+                                content: text
+                            }
+                        ]
                     })
                 });
 
                 const data = await response.json();
-                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "抱歉، لمש أسمعك جيداً!";
+                
+                if (data.error) {
+                    throw new Error(data.error.message || JSON.stringify(data.error));
+                }
 
-                // إزالة رسالة التحميل وإضافة رد مومو
+                const reply = data.choices?.[0]?.message?.content || "抱歉، لم أسمعك جيداً!";
+
                 document.getElementById(loadingId).remove();
                 appendMessage(reply, 'momo');
                 
                 momoSpeech.innerText = reply.split('\n')[0];
-                momoSub.innerText = "مومو يتحدث معك بالصينية والعربية";
-                animateMouth();
-                
-                // استخراج وحفظ النطق إن وجد
-                speakChinese(momoSpeech.innerText);
+                momoSub.innerText = "مومو يتحدث معك";
 
             } catch (error) {
                 document.getElementById(loadingId).remove();
-                appendMessage("حدث خطأ في الاتصال بمومو.", 'momo');
+                appendMessage("خطأ في الاتصال: " + error.message, 'momo');
             }
         }
 
@@ -363,37 +269,6 @@
 
         function handleKeyPress(e) {
             if (e.key === 'Enter') sendMessage();
-        }
-
-        // إمكانية التسجيل الصوتي إن دعم المتصفح ذلك
-        let recognition;
-        function toggleVoice() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("متصفحك لا يدعم الإدخال الصوتي المباشر، استخدم الكتابة.");
-                return;
-            }
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.lang = 'zh-CN'; // أو ar-SA حسب رغبتك
-            const micBtn = document.getElementById('micBtn');
-
-            micBtn.classList.add('recording');
-            recognition.start();
-
-            recognition.onresult = function(event) {
-                const speechResult = event.results[0][0].transcript;
-                userInput.value = speechResult;
-                micBtn.classList.remove('recording');
-                sendMessage();
-            };
-
-            recognition.onerror = function() {
-                micBtn.classList.remove('recording');
-            };
-            
-            recognition.onend = function() {
-                micBtn.classList.remove('recording');
-            };
         }
     </script>
 </body>
